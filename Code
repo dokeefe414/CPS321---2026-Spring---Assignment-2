@@ -1,22 +1,27 @@
-User Program
-    write(1, "Hello\n", 6)
-        ↓
-libc write() wrapper
-        ↓
-_syscall3 macro → inline assembly
-        ↓
-int 0x80 (software interrupt)
-        ↓
-system_call (kernel entry)
-        ↓
-sys_call_table[4]
-        ↓
-sys_write()
-        ↓
-(return value in eax)
-        ↓
-ret_from_sys_call
-        ↓
-libc wrapper (handles errno)
-        ↓
-User program resumes
+int sys_write(unsigned int fd, char *buf, int count) {
+    struct file *file;
+
+    // Check file descriptor range
+    // Prevent invalid access by ensuring fd is within allowed limits
+    if (fd >= NR_OPEN)
+        return -EINVAL;
+
+    // Get file structure
+    // Maps file descriptor (fd) to the corresponding kernel file object
+    file = current->filp[fd];
+
+    // Check if file exists
+    // Ensure the file descriptor is valid and currently open
+    if (!file)
+        return -EINVAL;
+
+    // Handle empty write
+    // If count is 0, nothing needs to be written, so return immediately
+    if (!count)
+        return 0;
+
+    // Call device-specific write function
+    // Delegates the actual writing to the file/tty driver associated with the file
+    // (Actual device writing happens here — not required for this explanation)
+    return file->f_op->write(file, buf, count);
+}
