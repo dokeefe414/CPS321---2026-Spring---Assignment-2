@@ -1,1 +1,22 @@
-
+User Program
+    write(1, "Hello\n", 6)
+        ↓
+libc write() wrapper
+        ↓
+_syscall3 macro → inline assembly
+        ↓
+int 0x80 (software interrupt)
+        ↓
+system_call (kernel entry)
+        ↓
+sys_call_table[4]
+        ↓
+sys_write()
+        ↓
+(return value in eax)
+        ↓
+ret_from_sys_call
+        ↓
+libc wrapper (handles errno)
+        ↓
+User program resumes
