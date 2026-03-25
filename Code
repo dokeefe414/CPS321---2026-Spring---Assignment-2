@@ -25,3 +25,17 @@ int sys_write(unsigned int fd, char *buf, int count) {
     // (Actual device writing happens here — not required for this explanation)
     return file->f_op->write(file, buf, count);
 }
+
+## Explain sys_write()
+
+The sys_write() function is the kernel-level implementation of the write system call.
+
+- It first checks if the file descriptor (fd) is valid.
+- It then retrieves the file structure associated with that descriptor.
+- If the file does not exist, it returns an error.
+- If the count is 0, it returns immediately since there is nothing to write.
+- Finally, it calls the device-specific write function using:
+  
+  file->f_op->write(file, buf, count);
+
+This step passes control to the appropriate device driver (such as a tty), which handles the actual output.
