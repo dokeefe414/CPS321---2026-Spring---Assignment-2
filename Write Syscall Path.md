@@ -13,3 +13,5 @@ Since the number is 4, it calls sys_write().
 The sys_write() function runs inside the kernel and performs the requested operation.
 
 After it finishes, the result is placed back into EAX, and control returns to the user program.
+
+The sys_write() function then executes inside the kernel. It validates the file descriptor, retrieves the corresponding file structure from current->filp[fd], and calls the appropriate device-specific write function using: file->f_op->write(file, buf, count);
